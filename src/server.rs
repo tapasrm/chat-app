@@ -88,7 +88,7 @@ impl Handler<Disconnect> for ChatServer {
         let mut rooms: Vec<String> = vec![];
         if self.sessions.remove(&msg.id).is_some() {
             for (name, sessions) in &mut self.rooms {
-                if sessions.remove(&msg.id).is_some() {
+                if sessions.remove(&msg.id) {
                     rooms.push(name.to_owned());
                 }
             }
@@ -102,6 +102,14 @@ impl Handler<Disconnect> for ChatServer {
         }
     }
 }
+impl Handler<ClientMessage> for ChatServer {
+    type Result = ();
+
+    fn handle(&mut self, msg: ClientMessage, _: &mut Self::Context) -> Self::Result {
+        self.send_message(&msg.room, &msg.msg, msg.id)
+    }
+}
+
 impl Handler<ListRooms> for ChatServer {
     type Result = MessageResult<ListRooms>;
     fn handle(&mut self, _: ListRooms, _: &mut Self::Context) -> Self::Result {

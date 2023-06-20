@@ -18,7 +18,7 @@ mod session;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let server = server::ChatServer::new().start();
-    let conn_spec = "chat.db";
+    let conn_spec = "./chat.db";
     let manager = ConnectionManager::<SqliteConnection>::new(conn_spec);
     let pool = r2d2::Pool::builder().build(manager).expect("Failed to create pool.");
     let server_addr = "127.0.0.1";
@@ -28,8 +28,7 @@ async fn main() -> std::io::Result<()> {
             .allowed_origin("http://localhost:3000")
             .allowed_origin("http://localhost:8080")
             .allowed_methods(vec!["GET", "POST"])
-            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-            .allowed_header(http::header::ContentType)
+            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT, http::header::CONTENT_TYPE])
             .max_age(3600);
         App::new()
             .app_data(web::Data::new(server.clone()))

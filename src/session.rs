@@ -5,7 +5,7 @@ use actix_web_actors::ws;
 use serde::{Deserialize, Serialize};
 use diesel::{
     prelude::*,
-    r2d2::{self, ConnectionManager, SqliteConnection},
+    r2d2::{self, ConnectionManager},
 };
 use crate::db;
 use crate::models::NewConversation;
@@ -130,7 +130,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsChatSession {
                             room_id: input.room_id.to_string(),
                             message: input.value.join(""),
                         };
-                        let _ = db::insert_new_converstion(&mut conn, new_conversation);
+                        let _ = db::insert_new_conversation(&mut conn, new_conversation);
                         let msg = serde_json::to_string(&chat_msg).unwrap();
                         self.addr.do_send(server::ClientMessage {
                             id: self.id,

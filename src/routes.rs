@@ -19,7 +19,7 @@ pub async fn index() -> impl Responder {
     NamedFile::open_async("./static/index.html").await.unwrap()
 }
     
-pub fn chat_server(
+pub async fn chat_server(
     req: HttpRequest,
     stream: web::Payload,
     pool: web::Data<DbPool<SqliteConnection>>,
@@ -37,8 +37,8 @@ pub fn chat_server(
 
 #[post("/users/create")]
 pub async fn create_user(
-    pool: web::Data<DbPool>,
-    form: web::Json<models::newUser>,
+    pool: web::Data<DbPool<SqliteConnection>>,
+    form: web::Json<models::NewUser>,
 ) -> Result<HttpResponse, Error> {
     let user = web::block(move || {
         let mut conn = pool.get()?;
@@ -51,7 +51,7 @@ pub async fn create_user(
 
 #[get("/users/{user_id}")]
 pub async fn get_user_by_id(
-    pool: web::Data<DbPool>,
+    pool: web::Data<DbPool<SqliteConnection>>,
     id: web::Path<Uuid>,
 ) -> Result<HttpResponse, Error> {
     let user_id = id.to_owned();
@@ -78,7 +78,7 @@ pub async fn get_user_by_id(
 
 #[get("/conversations/{uid}")]
 pub async fn get_conversation_by_id(
-    pool: web::Data<DbPool>,
+    pool: web::Data<DbPool<SqliteConnection>>,
     uid: web::Path<Uuid>,
 ) -> Result<HttpResponse, Error> {
     let room_id = uid.to_owned();
@@ -104,7 +104,7 @@ pub async fn get_conversation_by_id(
 
 #[get("/users/phone/{user_phone}")]
 pub async fn get_user_by_phone(
-    pool: web::Data<DbPool>,
+    pool: web::Data<DbPool<SqliteConnection>>,
     phone: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
     let user_phone = phone.to_string();
@@ -130,7 +130,7 @@ pub async fn get_user_by_phone(
 
 #[get("/rooms")]
 pub async fn get_rooms( 
-    pool: web::Data<DbPool>,
+    pool: web::Data<DbPool<SqliteConnection>>,
 ) -> Result<HttpResponse, Error> {
     let rooms = web::block(move || {
         let mut conn = pool.get()?;
