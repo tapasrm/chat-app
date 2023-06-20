@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use std::iter::FromIterator;
 use diesel::prelude::*;
 use std::{
     collections::{HashMap, HashSet},
@@ -54,7 +55,7 @@ pub fn find_user_by_phone(
     use crate::schema::users::dsl::*;
     let user = users 
         .filter(phone.eq(user_phone))
-        .first::<User>(conn)
+         .first::<User>(conn)
         .optional()?;
     Ok(user)
 }
